@@ -1,0 +1,2 @@
+rm Objects/*
+rm Listings/*
