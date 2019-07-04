@@ -204,12 +204,25 @@ void printSpot(u8 x, u8 y){
 	if(y % 4 == 3){
 		value = 0xc0;
 	}
-	OLEDBuffer[(x * 2) + (128) * (y / 4)] = value;
-	OLEDBuffer[(x * 2) + (128) * (y / 4) + 1] = value;
+	OLEDBuffer[(x * 2) + (128) * (y / 4)] |= value;
+	OLEDBuffer[(x * 2) + (128) * (y / 4) + 1] |= value;
 }
 
 void clearSpot(u8 x, u8 y){
 	u8 value = 0x00;
-	OLEDBuffer[(x * 2) + (128) * (y / 4)] = value;
-	OLEDBuffer[(x * 2) + (128) * (y / 4) + 1] = value;
+	if(y % 4 == 0){
+		value = 0x03;
+	}
+	if(y % 4 == 1){
+		value = 0x0c;
+	}
+	if(y % 4 == 2){
+		value = 0x30;
+	}
+	
+	if(y % 4 == 3){
+		value = 0xc0;
+	}
+	OLEDBuffer[(x * 2) + (128) * (y / 4)] &= ~value;
+	OLEDBuffer[(x * 2) + (128) * (y / 4) + 1] &= ~value;
 }
