@@ -67,9 +67,23 @@ int main(void){
 		
 		if(t == KEYUP_PRES|| t == KEYLEFT_PRES || t == KEYDOWN_PRES || t == KEYRIGHT_PRES ){
 			LED3 = ~LED3;
-			direction = t;
+			
+			if(direction == 1 && t != KEYDOWN_PRES){
+				direction = t;
+			}
+			
+			if(direction == 2 && t != KEYRIGHT_PRES){
+				direction = t;
+			}
+			
+			if(direction == 3 && t != KEYUP_PRES){
+				direction = t;
+			}
+			
+			if(direction == 4 && t != KEYLEFT_PRES){
+				direction = t;
+			}
 		}
-	
 	}
 }
 
