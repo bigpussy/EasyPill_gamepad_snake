@@ -5,9 +5,43 @@
 #include "usart.h"
 #include "rtc.h"
 #include "OLED.h"
+
+#define SNAKE_MAX_LENGTH 100
+void showFood();
+void newFood();
+void printSnake();
+void moveSnake();
+struct{
+	u8 x[SNAKE_MAX_LENGTH];
+	u8 y[SNAKE_MAX_LENGTH];
+	u8 direction;
+	u8 speed;
+	u8 length;
+}snake;
+
+struct{
+	u8 x;
+	u8 y;
+	u8 blink;
+} food;
+	
 int main(void){
+	
+	snake.x[0] = 0;
+	snake.y[0] = 0;
+	snake.x[1] = 1;
+	snake.y[1] = 0;
+	snake.x[2] = 2;
+	snake.y[2] = 0;
+	snake.direction = 4;
+	snake.speed = 1;
+	snake.length = 3;
+	
+	food.x = 10;
+	food.y = 10;
+	food.blink = 1;
+	
 	u32 r, c, t;
-	u16 position_x = 0, position_y = 0;
 	u8 direction = 4;
 	extern u8  OLEDBuffer[];
 	delay_init();
@@ -26,64 +60,134 @@ int main(void){
 
 	OLEDDisplay();
 	
+	newFood();
+	
 	while(1){
-		
-		if(direction == 1){
-			if(position_y > 0){
-				position_y -- ;
-				clearSpot(position_x, position_y + 1);
-				printSpot(position_x, position_y);
-			}
-		}
-		
-		if(direction == 2){
-			if(position_x > 0){
-				position_x -- ;
-				clearSpot(position_x + 1, position_y);
-				printSpot(position_x, position_y);
-			}
-		}
-		
-		if(direction == 3){
-			if(position_y < 31){
-				position_y ++ ;
-				clearSpot(position_x, position_y - 1);
-				printSpot(position_x, position_y);
-			}
-		}
-		
-		if(direction == 4){
-			if(position_x < 63){
-				position_x ++ ;
-				clearSpot(position_x - 1, position_y);
-				printSpot(position_x, position_y);
-			}
-		}
-		
+		moveSnake();
+		printSnake();
 		OLEDDisplay();
-		delay_ms(10);
+		delay_ms(100);
 		
 		t = KEY_Scan(0);
 		
 		if(t == KEYUP_PRES|| t == KEYLEFT_PRES || t == KEYDOWN_PRES || t == KEYRIGHT_PRES ){
 			LED3 = ~LED3;
 			
-			if(direction == 1 && t != KEYDOWN_PRES){
-				direction = t;
+			if(snake.direction == 1 && t != KEYDOWN_PRES){
+				snake.direction = t;
 			}
 			
-			if(direction == 2 && t != KEYRIGHT_PRES){
-				direction = t;
+			if(snake.direction == 2 && t != KEYRIGHT_PRES){
+				snake.direction = t;
 			}
 			
-			if(direction == 3 && t != KEYUP_PRES){
-				direction = t;
+			if(snake.direction == 3 && t != KEYUP_PRES){
+				snake.direction = t;
 			}
 			
-			if(direction == 4 && t != KEYLEFT_PRES){
-				direction = t;
+			if(snake.direction == 4 && t != KEYLEFT_PRES){
+				snake.direction = t;
 			}
 		}
 	}
 }
 
+static unsigned int next = 1;
+int rand_r(u32 *seed)
+{
+	*seed = *seed * 1103515245 + 12345;
+	return (*seed % ((unsigned int)1000 + 1));
+}
+
+int rand(void)
+{
+	return (rand_r(&next));
+}
+
+void srand(u32 seed)
+{
+   next = seed;
+}
+
+void newFood(){
+	food.x = rand() % 64;
+	food.y = rand() % 32;
+	printSpot(food.x, food.y);
+}
+
+void showFood(){
+	if(food.blink == 1){
+		printSpot(food.x, food.y);
+	}else{
+		clearSpot(food.x, food.y);
+	}
+	food.blink = 1 - food.blink;
+}
+// print the snake
+void printSnake(){
+	int i;
+	for(i = 0; i < snake.length; i++){
+		printSpot(snake.x[i], snake.y[i]);
+	}
+}
+
+void moveSnake(){
+	int i;
+	
+
+
+	if(snake.direction == 1){
+		if(snake.y[0] > 0){
+			clearSpot(snake.x[snake.length - 1], snake.y[snake.length - 1]);
+			for(i = 1; i < snake.length; i++){
+				snake.x[i] = snake.x[i-1];
+				snake.y[i] = snake.y[i-1];
+			}
+					
+			snake.y[0] -- ;
+			printSpot(snake.x[0], snake.y[0]);
+		}
+	}
+	
+	if(snake.direction == 2){
+		if(snake.x > 0){
+			clearSpot(snake.x[snake.length - 1], snake.y[snake.length - 1]);
+			for(i = 1; i < snake.length; i++){
+				snake.x[i] = snake.x[i-1];
+				snake.y[i] = snake.y[i-1];
+			}
+			
+			snake.x[0] -- ;
+			printSpot(snake.x[0], snake.y[0]);
+		}
+	}
+	
+	if(snake.direction == 3){
+		if(snake.y[0] < 31){
+			clearSpot(snake.x[snake.length - 1], snake.y[snake.length - 1]);
+			for(i = 1; i < snake.length; i++){
+				snake.x[i] = snake.x[i-1];
+				snake.y[i] = snake.y[i-1];
+			}
+			
+			snake.y[0] ++ ;
+			printSpot(snake.x[0], snake.y[0]);
+		}
+	}
+	
+	if(snake.direction == 4){
+		if(snake.x[0] < 63){
+			clearSpot(snake.x[snake.length - 1], snake.y[snake.length - 1]);
+			for(i = 1; i < snake.length; i++){
+				snake.x[i] = snake.x[i-1];
+				snake.y[i] = snake.y[i-1];
+			}
+			
+			snake.x[0] ++ ;
+			printSpot(snake.x[0], snake.y[0]);
+		}
+	}
+	
+	
+	
+}
