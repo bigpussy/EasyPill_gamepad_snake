@@ -5,6 +5,7 @@
 #include "usart.h"
 #include "rtc.h"
 #include "OLED.h"
+#include "BEEP.h"
 
 #define SNAKE_MAX_LENGTH 100
 void showFood();
@@ -27,11 +28,11 @@ struct{
 	
 int main(void){
 	
-	snake.x[0] = 0;
+	snake.x[0] = 2;
 	snake.y[0] = 0;
 	snake.x[1] = 1;
 	snake.y[1] = 0;
-	snake.x[2] = 2;
+	snake.x[2] = 0;
 	snake.y[2] = 0;
 	snake.direction = 4;
 	snake.speed = 1;
@@ -50,6 +51,7 @@ int main(void){
 	OLEDInit();
 	OLEDClear();
 	OLEDDisplay();
+	Beep_Init();
 	
 	delay_ms(300);
 	
@@ -61,7 +63,7 @@ int main(void){
 	OLEDDisplay();
 	
 	newFood();
-	
+	LED3 = 1;
 	while(1){
 		moveSnake();
 		printSnake();
@@ -71,7 +73,6 @@ int main(void){
 		t = KEY_Scan(0);
 		
 		if(t == KEYUP_PRES|| t == KEYLEFT_PRES || t == KEYDOWN_PRES || t == KEYRIGHT_PRES ){
-			LED3 = ~LED3;
 			
 			if(snake.direction == 1 && t != KEYDOWN_PRES){
 				snake.direction = t;
@@ -133,61 +134,93 @@ void printSnake(){
 
 void moveSnake(){
 	int i;
-	
-
-
+	u8 tail_x = snake.x[snake.length - 1];
+	u8 tail_y = snake.y[snake.length - 1];
 	if(snake.direction == 1){
 		if(snake.y[0] > 0){
 			clearSpot(snake.x[snake.length - 1], snake.y[snake.length - 1]);
-			for(i = 1; i < snake.length; i++){
+			for(i = snake.length - 1; i > 0; i--){
 				snake.x[i] = snake.x[i-1];
 				snake.y[i] = snake.y[i-1];
 			}
-					
-			snake.y[0] -- ;
-			printSpot(snake.x[0], snake.y[0]);
+			if(snake.y[0] - 1 == food.y && snake.x[0] == food.x){
+				snake.y[0]--;
+				snake.x[snake.length] = snake.x[snake.length - 1];
+				snake.y[snake.length] = snake.y[snake.length - 1];
+				snake.length++;
+				sound();
+				newFood();
+			}else{ 
+				snake.y[0] -- ;
+				printSpot(snake.x[0], snake.y[0]);
+			}
 		}
 	}
 	
 	if(snake.direction == 2){
-		if(snake.x > 0){
+		if(snake.x[0] > 0){
 			clearSpot(snake.x[snake.length - 1], snake.y[snake.length - 1]);
-			for(i = 1; i < snake.length; i++){
+			for(i = snake.length - 1; i > 0; i--){
 				snake.x[i] = snake.x[i-1];
 				snake.y[i] = snake.y[i-1];
 			}
-			
-			snake.x[0] -- ;
-			printSpot(snake.x[0], snake.y[0]);
+			if(snake.x[0] - 1 == food.x && snake.y[0] == food.y){
+				snake.x[0]--;
+				snake.x[snake.length] = snake.x[snake.length - 1];
+				snake.y[snake.length] = snake.y[snake.length - 1];
+				snake.length++;
+				sound();
+				newFood();
+			}else{
+				snake.x[0] -- ;
+				printSpot(snake.x[0], snake.y[0]);
+			}
 		}
 	}
 	
 	if(snake.direction == 3){
 		if(snake.y[0] < 31){
 			clearSpot(snake.x[snake.length - 1], snake.y[snake.length - 1]);
-			for(i = 1; i < snake.length; i++){
+			for(i = snake.length - 1; i > 0; i--){
 				snake.x[i] = snake.x[i-1];
 				snake.y[i] = snake.y[i-1];
 			}
-			
-			snake.y[0] ++ ;
-			printSpot(snake.x[0], snake.y[0]);
+			if(snake.y[0] + 1 == food.y && snake.x[0] == food.x){
+				snake.y[0]++;
+				snake.x[snake.length] = snake.x[snake.length - 1];
+				snake.y[snake.length] = snake.y[snake.length - 1];
+				snake.length++;
+				sound();
+				newFood();
+			}else{
+				snake.y[0] ++ ;
+				printSpot(snake.x[0], snake.y[0]);
+			}
 		}
 	}
 	
 	if(snake.direction == 4){
 		if(snake.x[0] < 63){
-			clearSpot(snake.x[snake.length - 1], snake.y[snake.length - 1]);
-			for(i = 1; i < snake.length; i++){
+			clearSpot(tail_x, tail_y);
+			for(i = snake.length - 1; i > 0; i--){
 				snake.x[i] = snake.x[i-1];
 				snake.y[i] = snake.y[i-1];
 			}
 			
-			snake.x[0] ++ ;
-			printSpot(snake.x[0], snake.y[0]);
+			if(snake.x[0] + 1 == food.x && snake.y[0] == food.y){
+				snake.x[0]++;
+				snake.x[snake.length] = snake.x[snake.length - 1];
+				snake.y[snake.length] = snake.y[snake.length - 1];
+				snake.length++;
+				sound();
+				newFood();
+			}else{
+				snake.x[0] ++ ;
+				printSpot(snake.x[0], snake.y[0]);
+			}
+
+			
 		}
 	}
-	
-	
 	
 }
