@@ -24,12 +24,16 @@
 #define KEYLEFT  GPIO_ReadInputDataBit(GPIOB,GPIO_Pin_11)//读取按键1
 #define KEYDOWN   GPIO_ReadInputDataBit(GPIOB,GPIO_Pin_10)//读取按键2 
 #define KEYRIGHT   GPIO_ReadInputDataBit(GPIOB,GPIO_Pin_1)
+#define KEYA   GPIO_ReadInputDataBit(GPIOA,GPIO_Pin_0)
+#define KEYB   GPIO_ReadInputDataBit(GPIOA,GPIO_Pin_1)
 
 #define KEYUP_PRES	1		 
 #define KEYLEFT_PRES	2	
 #define KEYDOWN_PRES	3		
 #define KEYRIGHT_PRES	4
 	 
+#define KEYA_PRES	5
+#define KEYB_PRES	6
 
 void KEY_Init(void);//IO初始化
 u8 KEY_Scan(u8 mode);  	//按键扫描函数					    

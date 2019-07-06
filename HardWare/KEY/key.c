@@ -30,14 +30,10 @@ void KEY_Init(void)
 	
 	GPIO_InitStructure.GPIO_Pin  = GPIO_Pin_11| GPIO_Pin_10 | GPIO_Pin_1;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU; //设置成上拉输入
- 	GPIO_Init(GPIOB, &GPIO_InitStructure);//初始化GPIOC5
+ 	GPIO_Init(GPIOB, &GPIO_InitStructure);
 	
-	GPIO_InitStructure.GPIO_Pin  = GPIO_Pin_3;//PE3
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU; //设置成上拉输入
- 	GPIO_Init(GPIOE, &GPIO_InitStructure);//初始化GPIOE3
- 
-	GPIO_InitStructure.GPIO_Pin  = GPIO_Pin_0;//PA0
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD; //PA0设置成输入，默认下拉	  
+	GPIO_InitStructure.GPIO_Pin  = GPIO_Pin_0 | GPIO_Pin_1;//PA0
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU; //PA0设置成输入，默认下拉	  
 	GPIO_Init(GPIOA, &GPIO_InitStructure);//初始化GPIOA.0
 	
 } 
@@ -54,7 +50,7 @@ u8 KEY_Scan(u8 mode)
 {	 
 	static u8 key_up=1;//按键按松开标志
 	if(mode)key_up=1;  //支持连按		  
-	if(key_up&&(KEYUP==0||KEYLEFT==0||KEYDOWN==0 || KEYRIGHT==0))
+	if(key_up&&(KEYUP==0||KEYLEFT==0||KEYDOWN==0 || KEYRIGHT==0 || KEYA==0 || KEYB==0))
 	{
 		delay_ms(10);//去抖动 
 		key_up=0;
@@ -62,6 +58,8 @@ u8 KEY_Scan(u8 mode)
 		else if(KEYLEFT==0)return KEYLEFT_PRES;
 		else if(KEYDOWN==0)return KEYDOWN_PRES;
 		else if(KEYRIGHT==0)return KEYRIGHT_PRES; 
+		else if(KEYA==0)return KEYA_PRES; 
+		else if(KEYB==0)return KEYB_PRES; 
 	}else if(KEYUP==1&&KEYLEFT==1&&KEYDOWN==1&&KEYRIGHT==1)key_up=1; 	     
 	return 0;// 无按键按下
 }

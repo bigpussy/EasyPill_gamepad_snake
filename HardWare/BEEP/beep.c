@@ -54,3 +54,19 @@ void deadSound(){
 	}
 	BEEEP = 0;
 }
+
+void pauseSound(){
+	int i;
+	for(i = 0; i < 15 ; i++){
+		delay_us(450);
+		BEEEP = ~BEEEP;
+	}
+	delay_ms(200);
+	for(i = 0; i < 15 ; i++){
+		delay_us(550);
+		BEEEP = ~BEEEP;
+	}
+	delay_ms(200);
+
+	BEEEP = 0;
+}

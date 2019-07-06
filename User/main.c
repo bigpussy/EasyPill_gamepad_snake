@@ -16,6 +16,7 @@ void newFood();
 void printSnake();
 void moveSnake();
 void showLength();
+void gameOver();
 struct{
 	u8 x[SNAKE_MAX_LENGTH];
 	u8 y[SNAKE_MAX_LENGTH];
@@ -23,6 +24,7 @@ struct{
 	u8 speed;
 	u8 length;
 	u8 died;
+	u8 pause;
 }snake;
 
 struct{
@@ -48,17 +50,15 @@ int main(void){
 	
 	delay_ms(300);
 	
-	for(r=0;r<1024;r++){
-		OLEDBuffer[r] = 0x00;
-	}
-	OLEDDisplay();
+	
 
 	LED3 = 1;
 	
 	initMap();
 	showLength();
+	
 	while(1){
-		if(snake.died == 0){
+		if(snake.died == 0 && snake.pause == 0){
 			moveSnake();
 		}
 		
@@ -84,6 +84,20 @@ int main(void){
 			if(snake.direction == 4 && t != KEYLEFT_PRES){
 				snake.direction = t;
 			}
+		}
+		
+		if(t == KEYA_PRES){
+			snake.pause = !snake.pause;
+			if(snake.pause == 1){
+				showString(51, 20, "  P");
+			}else{
+				showString(51, 20, "   ");
+			}
+			pauseSound();
+		}
+		
+		if(t == KEYB_PRES){
+			initMap();
 		}
 	}
 }
@@ -118,6 +132,12 @@ void initMap(){
 	snake.speed = 1;
 	snake.length = 3;
 	snake.died = 0;
+	snake.pause = 0;
+	extern u8  OLEDBuffer[];
+	
+	for(int r=0;r<1024;r++){
+		OLEDBuffer[r] = 0x00;
+	}
 	
 	newFood();
 	
@@ -271,8 +291,13 @@ void moveSnake(){
 	showLength();
 	if(snake.died == 1){
 		deadSound();
+		gameOver();
 	}
 
+}
+
+void gameOver(){
+	showString(MAP_WIDTH / 2 - 18, MAP_HEIGHT / 2 - 4 , "GAME OVER" );
 }
 
 
