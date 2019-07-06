@@ -139,6 +139,8 @@ void initMap(){
 		OLEDBuffer[r] = 0x00;
 	}
 	
+	startSound();
+	
 	newFood();
 	
 	for(int i=0; i < MAP_WIDTH; i++){

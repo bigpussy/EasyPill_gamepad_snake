@@ -11,5 +11,6 @@ void Beep_Init(void);
 void sound();
 void deadSound();
 void pauseSound();
+void startSound();
 #endif
 

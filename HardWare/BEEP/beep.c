@@ -70,3 +70,31 @@ void pauseSound(){
 
 	BEEEP = 0;
 }
+
+void startSound(){
+	int i;
+	for(i = 0; i < 50 ; i++){
+		delay_us(300);
+		BEEEP = ~BEEEP;
+	}
+	delay_ms(100);
+	for(i = 0; i < 50 ; i++){
+		delay_us(350);
+		BEEEP = ~BEEEP;
+	}
+	delay_ms(100);
+	
+	for(i = 0; i < 50 ; i++){
+		delay_us(300);
+		BEEEP = ~BEEEP;
+	}
+	delay_ms(100);
+	
+	for(i = 0; i < 50 ; i++){
+		delay_us(250);
+		BEEEP = ~BEEEP;
+	}
+	delay_ms(100);
+
+	BEEEP = 0;
+}
