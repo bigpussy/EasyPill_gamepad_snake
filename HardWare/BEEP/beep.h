@@ -9,6 +9,6 @@
 void Beep_Init(void);
 
 void sound();
-
+void deadSound();
 #endif
 

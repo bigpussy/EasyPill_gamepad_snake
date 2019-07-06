@@ -1,5 +1,5 @@
 #include "OLED.h"
-
+#include "string.h"
 
 u8 OLEDBuffer[1024] = {
 	0x80, 0xF8, 0xFC, 0xFE, 0xFE, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xEF, 0xE7, 0xE7, 0xE3, 
@@ -74,6 +74,20 @@ u8 OLEDBuffer[1024] = {
 	0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x1C, 0xC, 0x0, 0x0, 0x0, 0x0, 0x0, 
 	0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 
 };
+
+u8 Number[3 * 10] = {
+	0xf8, 0x88, 0xf8, //0
+	0x00, 0x00, 0xf8, //1
+	0xb8, 0xa8, 0xe8, //2
+	0xa8, 0xa8, 0xf8, //3
+	0xe0, 0x20, 0xf8, //4
+	0xe8, 0xa8, 0xb8, //5
+	0xf8, 0xa8, 0xb8, //6
+	0x80, 0x80, 0xf8, //7
+	0xf8, 0xa8, 0xf8, //8
+	0xe8, 0xa8, 0xf8, //9
+};
+
 
 void initOLEDPORT(){
 	GPIO_InitTypeDef  GPIO_InitStructure;
@@ -226,3 +240,55 @@ void clearSpot(u8 x, u8 y){
 	OLEDBuffer[(x * 2) + (128) * (y / 4)] &= ~value;
 	OLEDBuffer[(x * 2) + (128) * (y / 4) + 1] &= ~value;
 }
+
+void showChar(u8 x, u8 y, u8 num){
+	u8 n1 = Number[(num - 0x30) * 3];
+	u8 n2 = Number[(num - 0x30) * 3 + 1];
+	u8 n3 = Number[(num - 0x30) * 3 + 2];
+	
+	u8 dot_x, dot_y;
+	dot_x = x;
+	dot_y = y;
+	for(int i = 0; i < 5; i++){
+		if((n1 & 0x80) == 0x80){
+			printSpot(dot_x, dot_y);
+		}else{
+			clearSpot(dot_x, dot_y);
+		}
+		n1 <<= 1;
+		dot_y++;
+	}
+	
+	dot_x = x + 1;
+	dot_y = y;
+	for(int i = 0; i < 5; i++){
+		if((n2 & 0x80) == 0x80){
+			printSpot(dot_x, dot_y);
+		}else{
+			clearSpot(dot_x, dot_y);
+		}
+		n2 <<= 1;
+		dot_y++;
+	}
+
+	dot_x = x + 2;
+	dot_y = y;
+	for(int i = 0; i < 5; i++){
+		if((n3 & 0x80) == 0x80){
+			printSpot(dot_x, dot_y);
+		}else{
+			clearSpot(dot_x, dot_y);
+		}
+		n3 <<= 1;
+		dot_y++;
+	}
+}
+
+void showString(u8 x, u8 y, char * str){
+	for(int i = 0; i < strlen(str); i++){
+		showChar(x, y, str[i]);
+		x += 4;
+	}
+}
+
+

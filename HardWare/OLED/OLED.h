@@ -39,6 +39,11 @@ void setDot(void);
 void setPos(void);
 
 void printSpot(u8 x, u8 y);
+
 void clearSpot(u8 x, u8 y);
+
+void showChar(u8 x, u8 y, u8 num);
+
+void showString(u8 x, u8 y, char * str);
 
 #endif
